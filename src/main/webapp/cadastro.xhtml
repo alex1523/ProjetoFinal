@@ -10,7 +10,7 @@
 </h:head>
 <h:body>
 	
-	<!--mask="99999-999"-->
+	
 				  
 				   <script type="text/javascript" >
 				   
@@ -90,7 +90,7 @@
 
 		<p:commandButton value="Novo" 
 						 icon="ui-icon-plus"
-						 oncomplete="PF('dgLoader').show()">		
+						 oncomplete="PF('dgSave').show()">		
 		</p:commandButton>
 
 	</h:form>
@@ -99,7 +99,7 @@
 	<p:dialog width="560"
 			  height="220"	
 			  header="Incluir ETEC"
-		      widgetVar="dgLoader" 
+		      widgetVar="dgSave" 
 		      modal="true"
 		      resizable="false"
 		      showHeader="true">
@@ -115,8 +115,9 @@
 			<h:outputLabel value="CEP: "/>
 			<p:inputMask onblur="pesquisacep(this.value);"						 
 						 id="cep"
-					     
-						 size="10"/>
+					     mask="99999-999"
+						 size="10"
+						 converter="#{cepConverter}"/>
 			
 			<h:outputLabel value="Endereço: "/>
 			<p:inputText id="rua" 
@@ -141,12 +142,23 @@
 							 
 			<p:commandButton value="Cancelar"
 							 icon="ui-icon-close"
-							 oncomplete="PF('dgLoader').hide()"/>
+							 oncomplete="PF('dgSave').hide()"/>
 		</p:outputPanel>
 	</f:facet>
 		
-		<!--<p:graphicImage name="ajax-loader.gif" library="images" />-->
+		
 	</p:dialog>
+	
+	<p:dialog widgetVar="dgLoader" 
+			  modal="true" 
+			  draggable="false" 
+			  closable="false" 
+			  resizable="false" 
+			  showHeader="false">
+    
+    <p:graphicImage name="ajax-loader.gif" library="images" />
+	</p:dialog>
+	
 	
 	<p:ajaxStatus onstart="PF('dgLoader').show()"
 				  onsuccess="PF('dgLoader').hide()" />
