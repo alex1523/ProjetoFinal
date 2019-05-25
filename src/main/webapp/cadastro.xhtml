@@ -86,14 +86,14 @@
 			 autoUpdate="true"
 			 sticky="false" life="7500" />
 	
-	<h:form>
+	<h:form id="form">
 
 		<p:commandButton value="Novo" 
 						 icon="ui-icon-plus"
 						 oncomplete="PF('dgSave').show()">		
 		</p:commandButton>
 
-	</h:form>
+	</h:form> <!--formulario tem que estar dentro do form-->
 
 
 	<p:dialog width="560"
@@ -107,29 +107,35 @@
 	<h:panelGrid columns="2">
 
 			<h:outputLabel value="Nome: " />
-			<p:inputText size="35" />
+			<p:inputText size="35" 
+						 value="#{registrosMB.edit.nome}" />
 
 			<h:outputLabel value="Código: " />
-			<p:inputText size="4"/>
+			<p:inputText size="4"
+						 value="#{registrosMB.edit.id}"/>
 			
 			<h:outputLabel value="CEP: "/>
 			<p:inputMask onblur="pesquisacep(this.value);"						 
 						 id="cep"
 					     mask="99999-999"
 						 size="10"
-						 converter="#{cepConverter}"/>
+						 converter="#{cepConverter}"
+						 value="#{registrosMB.edit.cep}"/>
 			
 			<h:outputLabel value="Endereço: "/>
 			<p:inputText id="rua" 
-						 size="35"/>
+						 size="35"
+						 value="#{registrosMB.edit.endereco}"/>
 			
 			<h:outputLabel value="Bairro: "/>
 			<p:inputText id="bairro"
-					     size="20"/>
+					     size="20"
+					     value="#{registrosMB.edit.bairro}"/>
 			
 			<h:outputLabel value="Cidade"/>
 			<p:inputText id="cidade"
-						 size="25"/>
+						 size="25"
+						 value="#{registrosMB.edit.cidade}"/>
 
 		</h:panelGrid>
 	
@@ -138,7 +144,9 @@
 					   style="text-align:center">
 					   
 			<p:commandButton value="Confirmar"
-							 icon="ui-icon-check"/>
+							 icon="ui-icon-check"
+							 actionListener="#{registrosMB.onSave}"
+							 update=":msgs form"/>
 							 
 			<p:commandButton value="Cancelar"
 							 icon="ui-icon-close"
