@@ -2,6 +2,8 @@ package br.com.etechoracio.projetofinal.business;
 
 
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +25,22 @@ public class RegistrosSB extends BaseSB {
 	
 	
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void save(Registros registros) {
-		registrosDAO.save(registros);
+	public void save(Registros registros) throws Exception {
+		Registros r = registrosDAO.findByIdOrNome(registros.getId(), registros.getNome());
+		
+		if (r == null) {
+			registrosDAO.save(registros);
+		}
+		
+		else {
+			throw new Exception("Existe registro com mesmo código ou nome");
+		}
 	}
 	
-	//throw new Exception ("Erro");
+	public List<Registros> findAll() {
+		return registrosDAO.findAll();
+	}
+	
+	
 
 }

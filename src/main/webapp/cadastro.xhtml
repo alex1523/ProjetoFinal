@@ -7,172 +7,199 @@
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Cadastro ETEC</title>
+
+	<script type="text/javascript">
+		function limpa_formulário_cep() {
+			//Limpa valores do formulário de cep.
+			document.getElementById('form:rua').value = ("");
+			document.getElementById('form:bairro').value = ("");
+			document.getElementById('form:cidade').value = ("");
+
+		}
+
+		function meu_callback(conteudo) {
+			if (!("erro" in conteudo)) {
+				//Atualiza os campos com os valores.
+				document.getElementById('form:rua').value = (conteudo.logradouro);
+				document.getElementById('form:bairro').value = (conteudo.bairro);
+				document.getElementById('form:cidade').value = (conteudo.localidade);
+			} //end if.
+			else {
+				//CEP não Encontrado.
+				limpa_formulário_cep();
+				alert("CEP não encontrado.");
+			}
+		}
+
+		function pesquisacep(valor) {
+
+			//Nova variável "cep" somente com dígitos.
+			var cep = valor.replace(/\D/g, '');
+
+			//Verifica se campo cep possui valor informado.
+			if (cep != "") {
+
+				//Expressão regular para validar o CEP.
+				var validacep = /^[0-9]{8}$/;
+
+				//Valida o formato do CEP.
+				if (validacep.test(cep)) {
+
+					//Preenche os campos com "..." enquanto consulta webservice.
+					document.getElementById('form:rua').value = "...";
+					document.getElementById('form:bairro').value = "...";
+					document.getElementById('form:cidade').value = "...";
+
+					//Cria um elemento javascript.
+					var script = document.createElement('script');
+
+					//Sincroniza com o callback.
+					script.src = 'https://viacep.com.br/ws/' + cep
+							+ '/json/?callback=meu_callback';
+
+					//Insere script no documento e carrega o conteúdo.
+					document.body.appendChild(script);
+
+				} //end if.
+				else {
+					//cep é inválido.
+					limpa_formulário_cep();
+					alert("Formato de CEP inválido.");
+				}
+			} //end if.
+			else {
+				//cep sem valor, limpa formulário.
+				limpa_formulário_cep();
+			}
+		};
+	</script>
+
+
 </h:head>
 <h:body>
-	
-	
-				  
-				   <script type="text/javascript" >
-				   
-				   function limpa_formulário_cep() {
-			            //Limpa valores do formulário de cep.
-			            document.getElementById('rua').value=("");
-			            document.getElementById('bairro').value=("");
-			            document.getElementById('cidade').value=("");
-			            
-			        }
-				   
-				   function meu_callback(conteudo) {
-				        if (!("erro" in conteudo)) {
-				            //Atualiza os campos com os valores.
-				            document.getElementById('rua').value=(conteudo.logradouro);
-				            document.getElementById('bairro').value=(conteudo.bairro);
-				            document.getElementById('cidade').value=(conteudo.localidade);				            
-				        } //end if.
-				        else {
-				            //CEP não Encontrado.
-				            limpa_formulário_cep();
-				            alert("CEP não encontrado.");
-				        }
-				    }
-				   
-				   function pesquisacep(valor) {
 
-				        //Nova variável "cep" somente com dígitos.
-				        var cep = valor.replace(/\D/g, '');
+	<p:growl id="msgs" widgetVar="msg" showDetail="false" autoUpdate="true"
+		sticky="false" life="7500" />
 
-				        //Verifica se campo cep possui valor informado.
-				        if (cep != "") {
-
-				            //Expressão regular para validar o CEP.
-				            var validacep = /^[0-9]{8}$/;
-
-				            //Valida o formato do CEP.
-				            if(validacep.test(cep)) {
-
-				                //Preenche os campos com "..." enquanto consulta webservice.
-				                document.getElementById('rua').value="...";
-				                document.getElementById('bairro').value="...";
-				                document.getElementById('cidade').value="...";
-				               
-
-				                //Cria um elemento javascript.
-				                var script = document.createElement('script');
-
-				                //Sincroniza com o callback.
-				                script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
-
-				                //Insere script no documento e carrega o conteúdo.
-				                document.body.appendChild(script);
-
-				            } //end if.
-				            else {
-				                //cep é inválido.
-				                limpa_formulário_cep();
-				                alert("Formato de CEP inválido.");
-				            }
-				        } //end if.
-				        else {
-				            //cep sem valor, limpa formulário.
-				            limpa_formulário_cep();
-				        }
-				    };
-				   
-				   </script>
-	
-	<p:growl id="msgs" 
-			 widgetVar="msg" 
-			 showDetail="false" 
-			 autoUpdate="true"
-			 sticky="false" life="7500" />
-	
 	<h:form id="form">
 
-		<p:commandButton value="Novo" 
-						 icon="ui-icon-plus"
-						 oncomplete="PF('dgSave').show()">		
+		<p:commandButton value="Novo" icon="ui-icon-plus"
+			oncomplete="PF('dgSave').show()">
 		</p:commandButton>
 
-	</h:form> <!--formulario tem que estar dentro do form-->
+		<p:dialog width="560" height="220" header="Incluir ETEC"
+			widgetVar="dgSave" modal="true" resizable="false" showHeader="true">
+
+			<h:panelGrid columns="2">
+
+				<h:outputLabel value="Nome: " />
+				<p:inputText size="35" value="#{registrosMB.edit.nome}" />
+
+				<h:outputLabel value="Código: " />
+				<p:inputText size="4" value="#{registrosMB.edit.id}" />
+
+				<h:outputLabel value="CEP: " />
+				<p:inputMask onblur="pesquisacep(this.value);" id="cep"
+					mask="99999-999" size="10" converter="#{cepConverter}"
+					value="#{registrosMB.edit.cep}" />
+
+				<h:outputLabel value="Endereço: " />
+				<p:inputText id="rua" size="35" value="#{registrosMB.edit.endereco}" />
+
+				<h:outputLabel value="Bairro: " />
+				<p:inputText id="bairro" size="20"
+					value="#{registrosMB.edit.bairro}" />
+
+				<h:outputLabel value="Cidade" />
+				<p:inputText id="cidade" size="25"
+					value="#{registrosMB.edit.cidade}" />
+
+			</h:panelGrid>
+
+			<f:facet name="footer">
+				<p:outputPanel layout="block" style="text-align:center">
+
+					<p:commandButton value="Confirmar" icon="ui-icon-check"
+						actionListener="#{registrosMB.onSave}" update=":msgs form" />
+
+					<p:commandButton value="Cancelar" icon="ui-icon-close"
+						oncomplete="PF('dgSave').hide()" />
+				</p:outputPanel>
+			</f:facet>
 
 
-	<p:dialog width="560"
-			  height="220"	
-			  header="Incluir ETEC"
-		      widgetVar="dgSave" 
-		      modal="true"
-		      resizable="false"
-		      showHeader="true">
-		      
-	<h:panelGrid columns="2">
+		</p:dialog>
 
-			<h:outputLabel value="Nome: " />
-			<p:inputText size="35" 
-						 value="#{registrosMB.edit.nome}" />
 
-			<h:outputLabel value="Código: " />
-			<p:inputText size="4"
-						 value="#{registrosMB.edit.id}"/>
+	</h:form>
+
+	<br></br>
+
+	<p:panel header="Registros"
+			 
+			 id="pnlResultado"
+			 style="width:98%; border:0">
+
+		<p:dataTable id="tblRegistros" value="#"
+			emptyMessage="Nenhum registro encontrado" reflow="true"
+			paginator="true" rows="9" rowsPerPageTemplate="5,10,15"
+			paginatorTemplate="{CurrentPageReport} {FirstPageLink}
+					 					{PreviousPageLink} {PageLinks}
+					 					{NextPageLink} {LastPageLink}
+					 					{RowsPerPageDropdown} ">
+
+
+			<p:column headerText="Código" style="white-space: pre-wrap">
+				<h:outputText value="#{registrosMB.edit.id}" />
+			</p:column>
 			
-			<h:outputLabel value="CEP: "/>
-			<p:inputMask onblur="pesquisacep(this.value);"						 
-						 id="cep"
-					     mask="99999-999"
-						 size="10"
-						 converter="#{cepConverter}"
-						 value="#{registrosMB.edit.cep}"/>
+			<p:column headerText="Nome" style="white-space: pre-wrap">
+				<h:outputText value="#{registrosMB.edit.nome}" />
+			</p:column>
 			
-			<h:outputLabel value="Endereço: "/>
-			<p:inputText id="rua" 
-						 size="35"
-						 value="#{registrosMB.edit.endereco}"/>
+			<p:column headerText="CEP" style="white-space: pre-wrap">
+				<h:outputText value="#{registrosMB.edit.cep}" />
+			</p:column>
 			
-			<h:outputLabel value="Bairro: "/>
-			<p:inputText id="bairro"
-					     size="20"
-					     value="#{registrosMB.edit.bairro}"/>
+			<p:column headerText="Endereço" style="white-space: pre-wrap">
+				<h:outputText value="#{registrosMB.edit.endereco}" />
+			</p:column>
 			
-			<h:outputLabel value="Cidade"/>
-			<p:inputText id="cidade"
-						 size="25"
-						 value="#{registrosMB.edit.cidade}"/>
-
-		</h:panelGrid>
-	
-	<f:facet name="footer">		
-		<p:outputPanel layout="block" 
-					   style="text-align:center">
-					   
-			<p:commandButton value="Confirmar"
-							 icon="ui-icon-check"
-							 actionListener="#{registrosMB.onSave}"
-							 update=":msgs form"/>
+			<p:column headerText="Bairro" style="white-space: pre-wrap">
+				<h:outputText value="#{registrosMB.edit.bairro}" />
+			</p:column>
+			
+			<p:column headerText="Cidade" style="white-space: pre-wrap">
+				<h:outputText value="#{registrosMB.edit.cidade}" />
+			</p:column>
+			
+			
+			<p:column style="text-align:center">			
+			<p:commandButton id="btnExcluir"
+							 icon="ui-icon-trash"
+							 title="Excluir"/>
 							 
-			<p:commandButton value="Cancelar"
-							 icon="ui-icon-close"
-							 oncomplete="PF('dgSave').hide()"/>
-		</p:outputPanel>
-	</f:facet>
-		
-		
+			<p:commandButton id="btnEditar"
+							 icon="ui-icon-pencil"
+							 title="Editar"/>									
+			</p:column>
+
+
+		</p:dataTable>
+
+	</p:panel>
+
+
+	<p:dialog widgetVar="dgLoader" modal="true" draggable="false"
+		closable="false" resizable="false" showHeader="false">
+
+		<p:graphicImage name="ajax-loader.gif" library="images" />
 	</p:dialog>
-	
-	<p:dialog widgetVar="dgLoader" 
-			  modal="true" 
-			  draggable="false" 
-			  closable="false" 
-			  resizable="false" 
-			  showHeader="false">
-    
-    <p:graphicImage name="ajax-loader.gif" library="images" />
-	</p:dialog>
-	
-	
+
+
 	<p:ajaxStatus onstart="PF('dgLoader').show()"
-				  onsuccess="PF('dgLoader').hide()" />
-				  
-				  
-				  
-				  
+		onsuccess="PF('dgLoader').hide()" />
+
+
 </h:body>
 </html>
