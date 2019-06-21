@@ -140,7 +140,7 @@
 			 id="pnlResultado"
 			 style="width:98%; border:0">
 
-		<p:dataTable id="tblRegistros" value="#"
+		<p:dataTable id="tblRegistros" var="dale" value="#{registrosMB.listagem}"
 			emptyMessage="Nenhum registro encontrado" reflow="true"
 			paginator="true" rows="9" rowsPerPageTemplate="5,10,15"
 			paginatorTemplate="{CurrentPageReport} {FirstPageLink}
@@ -150,38 +150,44 @@
 
 
 			<p:column headerText="Código" style="white-space: pre-wrap">
-				<h:outputText value="#{registrosMB.edit.id}" />
+				<h:outputText value="#{dale.id}" />
 			</p:column>
 			
 			<p:column headerText="Nome" style="white-space: pre-wrap">
-				<h:outputText value="#{registrosMB.edit.nome}" />
+				<h:outputText value="#{dale.nome}" />
 			</p:column>
 			
 			<p:column headerText="CEP" style="white-space: pre-wrap">
-				<h:outputText value="#{registrosMB.edit.cep}" />
+				<h:outputText value="#{dale.cep}" />
 			</p:column>
 			
 			<p:column headerText="Endereço" style="white-space: pre-wrap">
-				<h:outputText value="#{registrosMB.edit.endereco}" />
+				<h:outputText value="#{dale.endereco}" />
 			</p:column>
 			
 			<p:column headerText="Bairro" style="white-space: pre-wrap">
-				<h:outputText value="#{registrosMB.edit.bairro}" />
+				<h:outputText value="#{dale.bairro}" />
 			</p:column>
 			
 			<p:column headerText="Cidade" style="white-space: pre-wrap">
-				<h:outputText value="#{registrosMB.edit.cidade}" />
+				<h:outputText value="#{dale.cidade}" />
 			</p:column>
 			
 			
 			<p:column style="text-align:center">			
 			<p:commandButton id="btnExcluir"
 							 icon="ui-icon-trash"
-							 title="Excluir"/>
+							 title="Excluir"
+							 actionListener="#{registrosMB.onRemove(dale)}"
+							 update="tblRegistros"/>
 							 
 			<p:commandButton id="btnEditar"
 							 icon="ui-icon-pencil"
-							 title="Editar"/>									
+							 title="Editar"
+							 actionListener="#{registrosMB.onUpdate(dale)}"
+							 update="tblRegistros form"
+							 oncomplete="PF('dgSave').show()"
+							 process="tblRegistros"/>									
 			</p:column>
 
 

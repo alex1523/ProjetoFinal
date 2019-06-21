@@ -37,8 +37,15 @@ public class RegistrosSB extends BaseSB {
 		}
 	}
 	
+	
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Registros> findAll() {
 		return registrosDAO.findAll();
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void remove(Registros exclusao) {
+		registrosDAO.delete(exclusao);
 	}
 	
 	
